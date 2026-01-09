@@ -649,7 +649,6 @@ function CheckoutContent() {
             </div>
           </section>
 
-          {/* Cart items etc */}
           {displayItems.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-[2rem]">
               <p className="text-gray-400 mb-4">Keranjang kosong.</p>

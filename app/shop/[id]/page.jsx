@@ -488,8 +488,7 @@ export default function TenantListPage() {
     setIsModalOpen(true);
   };
 
-<<<<<<< HEAD:app/shop/[id]/page.jsx
-=======
+
   return (
     <motion.div
       layout
@@ -593,7 +592,7 @@ export default function ShopEtalasePage() {
       return 0;
   });
 
->>>>>>> 799641fdf1204d247b3a759b42eba940c4e55b7e:frontend/app/shop/[id]/page.jsx
+  
   const getBentoClass = (index) => {
     const pattern = [
       "md:col-span-2 md:row-span-2 min-h-[640px]",
