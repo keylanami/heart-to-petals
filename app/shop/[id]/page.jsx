@@ -28,10 +28,7 @@ import { SHOPS, allItems } from "@/app/utils/shop";
 import { useCart } from "@/app/context/CartContext";
 import { useParams, useRouter } from "next/navigation";
 import { useToast } from "@/app/context/ToastContext";
-// PERBAIKAN 1: Path import diperbaiki menggunakan alias @
-import { useAuth } from "@/app/context/AuthContext";
-// Pastikan path apiService sesuai struktur folder kamu, biasanya @/app/utils/api atau ./utils/api jika di folder yang sama
-import { apiService } from "@/app/utils/api"; 
+import { useAuth } from "@/app/context/AuthContext"; // Pastikan path ini benar
 import { Map, MapMarker, MarkerContent } from "@/components/ui/map";
 
 // --- ANIMATION VARIANTS ---
