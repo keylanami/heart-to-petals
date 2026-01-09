@@ -22,12 +22,7 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-<<<<<<< HEAD:app/checkout/page.jsx
 import { Map, MapMarker, MarkerContent } from "@/components/ui/map";
-=======
-import axios from "axios";
-import useSnap from "@/app/context/hooks/Snap";
->>>>>>> 799641fdf1204d247b3a759b42eba940c4e55b7e:frontend/app/checkout/page.jsx
 
 const shippingOptions = [
   { name: "Instant", cost: 25000, eta: "3-6 Jam" },
@@ -37,7 +32,8 @@ const shippingOptions = [
 
 const DEFAULT_COORD = { lat: -6.914744, lng: 107.60981 };
 
-// DATA INITIAL SESUAI PERMINTAAN (Tanpa City/isPrimary)
+
+
 const INITIAL_ADDRESSES = [
   {
     id: 101,
@@ -57,12 +53,8 @@ function CheckoutContent() {
   const searchParams = useSearchParams();
   const { showToast } = useToast();
   const { addOrder } = useOrder();
-<<<<<<< HEAD:app/checkout/page.jsx
   
   const mapRef = useRef(null);
-=======
-   const snap = useSnap(); 
->>>>>>> 799641fdf1204d247b3a759b42eba940c4e55b7e:frontend/app/checkout/page.jsx
 
   const [isClient, setIsClient] = useState(false);
   const [shippingSelection, setShippingSelection] = useState({});
@@ -157,8 +149,6 @@ function CheckoutContent() {
 
   const shopKeys = Object.keys(groupedCart);
 
-  
-
   useEffect(() => {
     if (shopKeys.length > 0) {
       setShippingSelection((prev) => {
@@ -202,6 +192,7 @@ function CheckoutContent() {
       maximumSignificantDigits: 3,
     }).format(num || 0);
 
+  // --- HANDLERS: ADDRESS ---
 
   const handleOpenAddressModal = () => {
     if (availableAddresses.length === 0) {
@@ -281,7 +272,6 @@ function CheckoutContent() {
     setShowAddressList(true);
   };
 
-<<<<<<< HEAD:app/checkout/page.jsx
   const handlePayment = async () => {
     if (!user) {
       showToast("Login dulu ya!", "error");
@@ -297,6 +287,7 @@ function CheckoutContent() {
     setIsProcessing(true);
 
     try {
+        // --- MOCK PAYMENT ---
         await new Promise(r => setTimeout(r, 1500)); 
 
         const mockOrderId = `ORD-${Date.now()}`;
@@ -318,18 +309,14 @@ function CheckoutContent() {
 
         addOrder(orderData); 
 
-      if (isDirectBuy) {
-          removeItems(displayItems.map((item) => item.id));
-      } else {
-          removeItems(displayItems.map((item) => item.id));
-          localStorage.removeItem("checkoutIds");
+        if (!isDirectBuy) {
+            removeItems(displayItems.map((item) => item.id));
+            localStorage.removeItem("checkoutIds");
         }
-
-
+        
         showToast("Pembayaran Berhasil (Mock)!", "success");
         router.push(`/checkout/order-success?id=${mockOrderId}`);
-        
-        
+
     } catch (error) {
         console.error("Checkout Error:", error);
         showToast("Terjadi kesalahan saat checkout.", "error");
@@ -337,61 +324,6 @@ function CheckoutContent() {
         setIsProcessing(false);
     }
   };
-=======
-
-
-const handlePayment = async () => {
-    if (!user) return router.push("/login");
-    
-    try {
-        const response = await axios.post(
-            "http://localhost:8000/api/checkout/process", // Ganti URL API backend kamu
-            {
-                // Kirim data yang dibutuhkan backend (sesuai Blade tadi dia butuh shipping_type)
-                shipping_type: "reguler", 
-                items: displayItems, 
-                address_id: activeAddress.id
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}` 
-                }
-            }
-        );
-
-        const { snap_token, order_id } = response.data;
-
-        // 2. Munculin Popup Midtrans (Pengganti snap.pay di jQuery)
-        if (snap && snap_token) {
-            snap.pay(snap_token, {
-                // Berhasil bayar
-                onSuccess: function (result) {
-                    showToast("Pembayaran Berhasil!", "success");
-                    router.push(`/checkout/success?id=${order_id}`);
-                },
-                // Masih pending (misal pilih ATM transfer tapi belum transfer)
-                onPending: function (result) {
-                    showToast("Menunggu Pembayaran...", "info");
-                    router.push(`/checkout/success?id=${order_id}`);
-                },
-                // Gagal / Error
-                onError: function (result) {
-                    showToast("Pembayaran Gagal", "error");
-                    console.error(result);
-                },
-                // User tutup popup tanpa bayar
-                onClose: function () {
-                    showToast("Pembayaran belum selesai", "warning");
-                }
-            });
-        }
-
-    } catch (error) {
-        console.error("Gagal checkout:", error);
-        showToast("Gagal memproses pesanan.", "error");
-    }
-};
->>>>>>> 799641fdf1204d247b3a759b42eba940c4e55b7e:frontend/app/checkout/page.jsx
 
   const handleCancelClick = () => setIsCancelModalOpen(true);
   const confirmCancelOrder = () => {
