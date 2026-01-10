@@ -3,6 +3,7 @@ import { useState, useRef, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
+import { List } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin,
@@ -425,6 +426,117 @@ const CompactCard = ({ product }) => {
   );
 };
 
+const ListCard = ({ product }) => {
+  const isDark = product.theme === "dark";
+  const { addToCart } = useCart();
+  const router = useRouter();
+  const { showToast } = useToast();
+  const { user } = useAuth();
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      showToast("Eits, login dulu baru bisa belanja! 🛒", "error");
+      router.push("/login");
+      return;
+    }
+    if (user && (user.role === "tenant" || user.role === "superadmin")) {
+      showToast("Gunakan akun user untuk belanja!", "error");
+      return;
+    }
+    addToCart(product, 1);
+    showToast(`${product.title} masuk keranjang!`, "success");
+  };
+
+  const handleCheckout = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      showToast("Eits, login dulu baru bisa belanja! 🛒", "error");
+      router.push("/login");
+      return;
+    }
+    if (user && (user.role === "tenant" || user.role === "superadmin")) {
+      showToast("Gunakan akun user untuk belanja!", "error");
+      return;
+    }
+    addToCart(product, 1);
+    router.push(`/checkout?direct=true&id=${product.id}`);
+  };
+
+  return (
+    <motion.div
+      variants={itemVariants}
+      className="
+        group flex gap-6 p-4 bg-white rounded-2xl
+        border border-gray-100
+        shadow-sm hover:shadow-xl
+        hover:-translate-y-1
+        transition-all duration-300
+      "
+    >
+      {/* IMAGE */}
+      <Link href={`/product/${product.id}`} className="shrink-0 overflow-hidden rounded-xl">
+        <img
+          src={product.image}
+          alt={product.title}
+          className="
+            w-28 h-36 object-cover
+            transition-transform duration-500
+            group-hover:scale-110
+          "
+        />
+      </Link>
+
+      {/* CONTENT */}
+      <div className="flex flex-col justify-between flex-1">
+        <div>
+          <h3
+            className="
+              text-xl font-serif font-bold text-dark-green
+              transition-all duration-300
+              group-hover:text-sage-green
+              group-hover:translate-x-1
+            "
+          >
+            {product.title}
+          </h3>
+
+          <p className="text-sm text-gray-500 line-clamp-2 mt-1">
+            {product.desc}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between mt-4">
+          <span className="text-lg font-bold text-dark-green">
+            {new Intl.NumberFormat("id-ID", {
+              style: "currency",
+              currency: "IDR",
+            }).format(product.price)}
+          </span>
+
+          <div className="flex gap-3 mt-4 items-center">
+            <button
+                onClick={handleAddToCart}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-[10px] font-bold uppercase tracking-wide backdrop-blur-md border transition-all active:scale-95 bg-dark-green/80 text-white border-dark-green/50 hover:bg-dark-green`}
+              >
+                <ShoppingBag size={12} /> Add
+              </button>
+              <button
+                onClick={handleCheckout}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 px-4 rounded-xl text-[10px] font-bold uppercase tracking-wide transition-all active:scale-95 bg-white/20 border border-dark-green/50 text-dark-green hover:bg-dark-green hover:text-white`}
+              >
+                Checkout <ArrowRight size={12} />
+              </button>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+
 const PromoCard = ({ className, onClick }) => (
   <motion.div
     layout
@@ -696,47 +808,21 @@ export default function TenantListPage() {
               >
                 <Grid3X3 size={18} />
               </button>
+              <button
+              onClick={() => setViewMode("list")}
+              className={`p-2 rounded-lg transition-all ${
+                viewMode === "list"
+                  ? "bg-dark-green text-white shadow-md"
+                  : "text-gray-400 hover:text-dark-green"
+              }`}
+              title="List View"
+            >
+              <List size={18} />
+            </button>
             </div>
           </motion.div>
 
-          {finalDisplayItems.length > 0 ? (
-            <motion.div
-              className={`grid gap-6 grid-flow-dense ${
-                viewMode === "bento"
-                  ? "grid-cols-1 md:grid-cols-4"
-                  : "grid-cols-2 md:grid-cols-4 lg:grid-cols-5"
-              }`}
-              variants={pageVariants}
-              key={searchQuery ? "search-mode" : "default-mode"}
-            >
-              <AnimatePresence mode="popLayout">
-                {finalDisplayItems.map((item, index) => {
-                  if (viewMode === "compact") {
-                    if (item.type === "promo") return null;
-                    return <CompactCard key={item.id} product={item} />;
-                  }
-                  if (item.type === "promo") {
-                    return (
-                      <PromoCard
-                        key={item.id}
-                        className={getBentoClass(index)}
-                        shopId={null}
-                        onClick={handleStartCustom}
-                      />
-                    );
-                  }
-                  return (
-                    <BentoCard
-                      key={item.id}
-                      product={item}
-                      index={index}
-                      className={getBentoClass(index)}
-                    />
-                  );
-                })}
-              </AnimatePresence>
-            </motion.div>
-          ) : (
+          {finalDisplayItems.length === 0 ? (
             <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
               <p className="text-gray-400 font-serif italic text-lg">
                 Yah, tidak ada bunga yang cocok dengan "{searchQuery}" 🥀
@@ -748,7 +834,69 @@ export default function TenantListPage() {
                 Reset Pencarian
               </button>
             </div>
+                    ) : (
+            <>
+              {viewMode === "bento" && (
+                <motion.div
+                  className="grid gap-6 grid-cols-1 md:grid-cols-4 grid-flow-dense"
+                  variants={pageVariants}
+                  initial="hidden"
+                  animate="show"
+                >
+                  {finalDisplayItems.map((item, index) => {
+                    if (item.type === "promo") {
+                      return (
+                        <PromoCard
+                          key={item.id}
+                          className={getBentoClass(index)}
+                          onClick={handleStartCustom}
+                        />
+                      );
+                    }
+                    return (
+                      <BentoCard
+                        key={item.id}
+                        product={item}
+                        index={index}
+                        className={getBentoClass(index)}
+                      />
+                    );
+                  })}
+                </motion.div>
+              )}
+
+              {viewMode === "compact" && (
+                <motion.div
+                  className="grid gap-6 grid-cols-2 md:grid-cols-4 lg:grid-cols-5"
+                  variants={pageVariants}
+                  initial="hidden"
+                  animate="show"
+                >
+                  {finalDisplayItems
+                    .filter(item => item.type !== "promo")
+                    .map(item => (
+                      <CompactCard key={item.id} product={item} />
+                    ))}
+                </motion.div>
+              )}
+
+              {viewMode === "list" && (
+                <motion.div
+                  className="flex flex-col gap-4"
+                  variants={pageVariants}
+                  initial="hidden"
+                  animate="show"
+                >
+                  {finalDisplayItems
+                    .filter(item => item.type !== "promo")
+                    .map(item => (
+                      <ListCard key={item.id} product={item} />
+                    ))}
+                </motion.div>
+              )}
+            </>
           )}
+
         </motion.section>
       </div>
       <Footer />
