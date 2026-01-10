@@ -41,6 +41,7 @@ export default function ProfilePage() {
   const { showToast } = useToast();
   const router = useRouter();
   const { orders } = useOrder();
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin";
 
   const mapRef = useRef(null);
 
@@ -320,7 +321,11 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="bg-[#FDFBF7] min-h-screen">
+    <main
+      className={`bg-[#FDFBF7] min-h-screen ${
+      isAdmin ? "pt-0 " : "pt-10"
+      }`}
+    >
       {user?.role === "user" && <Navbar />}
 
       <div className="pt-32 pb-24 px-4 md:px-6 max-w-5xl mx-auto">
