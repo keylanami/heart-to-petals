@@ -934,17 +934,6 @@ export default function FloristAdminPage() {
               </div>
             </div>
           </Link>
-
-          <Link
-            href="/"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-gray-200 text-gray-500 hover:bg-white hover:text-dark-green hover:shadow-md transition-all text-sm font-bold group bg-gray-50"
-          >
-            <ArrowLeft
-              size={16}
-              className="group-hover:-translate-x-1 transition-transform"
-            />
-            Back to Site
-          </Link>
         </div>
       </aside>
 

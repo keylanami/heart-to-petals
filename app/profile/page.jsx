@@ -321,7 +321,7 @@ export default function ProfilePage() {
 
   return (
     <main className="bg-[#FDFBF7] min-h-screen">
-      <Navbar />
+      {user?.role === "user" && <Navbar />}
 
       <div className="pt-32 pb-24 px-4 md:px-6 max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row items-center gap-6 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
